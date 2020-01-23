@@ -20,4 +20,4 @@ jobs:
           docker pull hadrieng/hmp:0.1.0
       - name: Run workflow
         run: |
-          nextflow run main.nf --with-docker
+          make run
