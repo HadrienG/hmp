@@ -14,3 +14,19 @@ process fastp {
             -o "${name}_trimmed_R1.fastq.gz" -O "${name}_trimmed_R2.fastq.gz"
         """
 }
+
+process fastqc {
+    tag "read qc: $name"
+    publishDir "${params.output}/fastqc/", mode: "copy"
+
+    input:
+        tuple val(name), file(reads)
+
+    output:
+        file "*_fastqc.{zip,html}"
+
+    script:
+        """
+        fastqc -t "${task.cpus}" ${reads}
+        """
+}
