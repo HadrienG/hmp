@@ -1,0 +1,5 @@
+# nextflow stuff
+.nextflow/
+
+# tests
+tests/results
