@@ -1,0 +1,9 @@
+# You can use this file to create a conda environment for this pipeline:
+#   conda env create -f environment.yml
+name: hmp
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - fastp=0.20.0
