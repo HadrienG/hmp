@@ -1,8 +1,8 @@
 run:
-	nextflow run main.nf
+	nextflow run main.nf --with-docker
 
 run_debug:
-	nextflow run main.nf -dump-channels -ansi-log false
+	nextflow run main.nf --with-docker -dump-channels -ansi-log false
 
 docker:
 	docker build -t hadrieng/hmp:0.1.0 .
