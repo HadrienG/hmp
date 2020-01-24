@@ -30,3 +30,19 @@ process fastqc {
         fastqc -t "${task.cpus}" ${reads}
         """
 }
+
+process multiqc {
+    tag "multiqc"
+    publishDir "${params.output}/", mode: "copy"
+
+    input:
+        file (fastqc_reports)
+
+    output:
+        file "*multiqc_report.html"
+
+    script:
+        """
+        multiqc .
+        """
+}
