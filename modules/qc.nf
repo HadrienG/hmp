@@ -31,12 +31,31 @@ process fastqc {
         """
 }
 
+process quast {
+    tag "assembly qc: $name"
+    publishDir "${params.output}/quast/", mode: "copy"
+
+    input:
+        tuple val(name), file(assembly)
+
+    output:
+        file("${name}/")
+
+    script:
+        """
+        metaquast.py --threads "${task.cpus}" \
+            --rna-finding --max-ref-number 0 -l "${name}" -o "${name}" \
+            "${assembly}"
+        """
+}
+
 process multiqc {
     tag "multiqc"
     publishDir "${params.output}/", mode: "copy"
 
     input:
         file (fastqc_reports)
+        file (quast_reports)
 
     output:
         file "*multiqc_report.html"

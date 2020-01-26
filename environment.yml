@@ -6,6 +6,8 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - fastqc=0.11.8
   - fastp=0.20.0
+  - fastqc=0.11.8
+  - megahit=1.2.9
   - multiqc=1.8
+  - quast=5.0.2
