@@ -6,8 +6,11 @@ channels:
   - bioconda
   - defaults
 dependencies:
+  - bowtie2=2.3.5
   - fastp=0.20.0
   - fastqc=0.11.8
   - megahit=1.2.9
+  - metabat2=2.15
   - multiqc=1.8
   - quast=5.0.2
+  - samtools=1.9

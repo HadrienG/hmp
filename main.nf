@@ -9,6 +9,9 @@ include quast from './modules/qc' params(output: params.output)
 
 include megahit from './modules/assembly' params(output: params.output)
 
+include bowtie from './modules/binning' params(output: params.output)
+include metabat from './modules/binning' params(output: params.output)
+
 
 Channel
     .fromFilePairs(params.reads)
@@ -36,6 +39,15 @@ workflow {
     // quast
     quast(dna_assemblies)
     quast.out.set{quast_dna_assemblies}
+
+    //binning
+    dna_assemblies
+        .join(trimmed_reads, by:0)
+        .dump()
+        .set{reads_and_assemblies}
+    bowtie(reads_and_assemblies)
+    bowtie.out.set{metabat_input}
+    metabat(metabat_input)
 
     // multiqc
     fastqc_raw
