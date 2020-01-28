@@ -7,6 +7,7 @@ channels:
   - defaults
 dependencies:
   - bowtie2=2.3.5
+  - checkm-genome=1.1.2
   - fastp=0.20.0
   - fastqc=0.11.8
   - megahit=1.2.9

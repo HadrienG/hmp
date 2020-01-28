@@ -44,3 +44,21 @@ process metabat {
         fi
         """
 }
+
+
+process checkm {
+    tag "binning qc"
+    publishDir "${params.output}/checkm", mode: "copy"
+
+    input:
+        file(bins)
+
+    output:
+        file("checkm_qa.txt")
+
+    script:
+        """
+        checkm lineage_wf -t "${task.cpus}" -x fa \
+            . lineage > checkm_qa.txt
+        """
+}

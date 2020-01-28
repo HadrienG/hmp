@@ -11,6 +11,7 @@ include megahit from './modules/assembly' params(output: params.output)
 
 include bowtie from './modules/binning' params(output: params.output)
 include metabat from './modules/binning' params(output: params.output)
+include checkm from './modules/binning' params(output: params.output)
 
 
 Channel
@@ -48,6 +49,12 @@ workflow {
     bowtie(reads_and_assemblies)
     bowtie.out.set{metabat_input}
     metabat(metabat_input)
+    metabat.out.set{bins_per_sample}
+    bins_per_sample
+        .collect()
+        .dump()
+        .set{genome_bins}
+    checkm(genome_bins)
 
     // multiqc
     fastqc_raw
