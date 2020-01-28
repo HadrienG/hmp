@@ -7,11 +7,15 @@ channels:
   - defaults
 dependencies:
   - bowtie2=2.3.5
+  - cd-hit=4.8.1
   - checkm-genome=1.1.2
   - fastp=0.20.0
   - fastqc=0.11.8
+  - gtdbtk=1.0.1
+  - kraken2=2.0.8_beta
   - megahit=1.2.9
   - metabat2=2.15
   - multiqc=1.8
+  - plass=3.764a3
   - quast=5.0.2
   - samtools=1.9

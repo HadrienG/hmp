@@ -1,18 +1,19 @@
 #!/usr/bin/env nextflow
 nextflow.preview.dsl = 2
 
-include fastp from './modules/qc' params(output: params.output)
-include fastqc as fastqc_raw from './modules/qc' params(output: params.output)
-include fastqc as fastqc_trim from './modules/qc' params(output: params.output)
-include multiqc from './modules/qc' params(output: params.output)
-include quast from './modules/qc' params(output: params.output)
+params.skip_qc = false
+
+include fastp from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
+include fastqc as fastqc_raw from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
+include fastqc as fastqc_trim from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
+include multiqc from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
+include quast from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
 
 include megahit from './modules/assembly' params(output: params.output)
 
 include bowtie from './modules/binning' params(output: params.output)
 include metabat from './modules/binning' params(output: params.output)
 include checkm from './modules/binning' params(output: params.output)
-
 
 Channel
     .fromFilePairs(params.reads)
@@ -34,6 +35,9 @@ workflow {
     fastqc_trim.out.set{fastqc_trimmed}
 
     // DNA assembly
+    if(params.skip_qc) {
+        read_files_raw.set{trimmed_reads}
+    }
     megahit(trimmed_reads)
     megahit.out.set{dna_assemblies}
 

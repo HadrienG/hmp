@@ -6,6 +6,8 @@ process fastp {
         tuple val(name), file(reads)
     output:
         tuple val(name), file("${name}_trimmed*.fastq.gz")
+    when:
+        !params.skip_qc
     script:
         """
         fastp -w ${task.cpus} -q 5 -l 50 -3 -M 5 \
@@ -21,10 +23,10 @@ process fastqc {
 
     input:
         tuple val(name), file(reads)
-
     output:
         file "*_fastqc.{zip,html}"
-
+    when:
+        !params.skip_qc
     script:
         """
         fastqc -t "${task.cpus}" ${reads}
@@ -37,10 +39,10 @@ process quast {
 
     input:
         tuple val(name), file(assembly)
-
     output:
         file("${name}/")
-
+    when:
+        !params.skip_qc
     script:
         """
         metaquast.py --threads "${task.cpus}" \
@@ -56,10 +58,10 @@ process multiqc {
     input:
         file (fastqc_reports)
         file (quast_reports)
-
     output:
         file "*multiqc_report.html"
-
+    when:
+        !params.skip_qc
     script:
         """
         multiqc .
