@@ -2,6 +2,7 @@
 nextflow.preview.dsl = 2
 
 params.skip_qc = false
+params.skip_annotation = true
 
 include fastp from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
 include fastqc as fastqc_raw from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
@@ -14,6 +15,8 @@ include megahit from './modules/assembly' params(output: params.output)
 include bowtie from './modules/binning' params(output: params.output)
 include metabat from './modules/binning' params(output: params.output)
 include checkm from './modules/binning' params(output: params.output)
+
+include gtdbtk from './modules/annotation' params(output: params.output, skip_annotation: params.skip_annotation)
 
 Channel
     .fromFilePairs(params.reads)
@@ -59,6 +62,9 @@ workflow {
         .dump()
         .set{genome_bins}
     checkm(genome_bins)
+
+    //bin phylogeny and annotation
+    gtdbtk(genome_bins)
 
     // multiqc
     fastqc_raw
