@@ -11,7 +11,7 @@ process gtdbtk {
         !params.skip_annotation
     script:
         """
-        gtdbtk classify_wf --genome_dir . \
+        gtdbtk classify_wf -x fa --genome_dir . \
             --out_dir gtdb --cpus "${task.cpus}"
         """
 }
