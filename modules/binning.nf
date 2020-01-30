@@ -29,7 +29,7 @@ process metabat {
         tuple val(name), file(assembly), file(mapping), file(index)
 
     output:
-        tuple val(name), file("${name}.*.fa")
+        file("${name}.*.fa")
 
     script:
         """

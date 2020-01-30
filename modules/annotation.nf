@@ -28,8 +28,10 @@ process prokka {
         !params.skip_annotation
     script:
         """
+        string="${bin}"
+        suffix=".fa"
         prokka --cpus "${task.cpus}" --metagenome \
-            --outdir prokka --prefix \${"${bin}"%.fa} "${bin}"
+            --outdir prokka --prefix \${string%\$suffix} "${bin}"
         """
 }
 

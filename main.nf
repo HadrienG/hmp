@@ -59,7 +59,6 @@ workflow {
     bowtie.out.set{metabat_input}
     metabat(metabat_input)
     metabat.out.set{bins_per_sample}
-    // TODO collect and retain bin name?
     bins_per_sample
         .collect()
         .dump(tag: "bins_per_sample")
