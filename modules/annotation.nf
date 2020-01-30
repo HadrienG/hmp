@@ -16,17 +16,35 @@ process gtdbtk {
         """
 }
 
-// // needs a db to test + a separate docker
-// process eggnog {
-//     tag "bin annotation"
-//     publishDir "${params.output}/eggnog", mode: "copy"
+process prokka {
+    tag "bin annotation"
+    publishDir "${params.output}/prokka", mode: "copy"
 
-//     input:
-//         file(bins)
+    input:
+        file(bin)
+    output:
+        file(bin)
+    when:
+        !params.skip_annotation
+    script:
+        """
+        prokka --cpus "${task.cpus}" --metagenome \
+            --outdir prokka --prefix \${"${bin}"%.fa} "${bin}"
+        """
+}
 
-//     output:
+process eggnog {
+    tag "bin annotation"
+    publishDir "${params.output}/eggnog", mode: "copy"
 
-//     script:
-//         """
-//         """
-// }
+    input:
+        file(bins)
+    output:
+
+    when:
+        !params.skip_annotation
+    script:
+        """
+        emapper.py
+        """
+}

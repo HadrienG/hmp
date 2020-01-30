@@ -17,5 +17,6 @@ dependencies:
   - metabat2=2.15
   - multiqc=1.8
   - plass=3.764a3
+  - prokka=1.14.5
   - quast=5.0.2
   - samtools=1.9

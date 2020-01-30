@@ -17,6 +17,8 @@ include metabat from './modules/binning' params(output: params.output)
 include checkm from './modules/binning' params(output: params.output)
 
 include gtdbtk from './modules/annotation' params(output: params.output, skip_annotation: params.skip_annotation)
+include prokka from './modules/annotation' params(output: params.output, skip_annotation: params.skip_annotation)
+
 
 Channel
     .fromFilePairs(params.reads)
@@ -51,30 +53,37 @@ workflow {
     //binning
     dna_assemblies
         .join(trimmed_reads, by:0)
-        .dump()
+        .dump(tag: "reads and assemblies")
         .set{reads_and_assemblies}
     bowtie(reads_and_assemblies)
     bowtie.out.set{metabat_input}
     metabat(metabat_input)
     metabat.out.set{bins_per_sample}
+    // TODO collect and retain bin name?
     bins_per_sample
         .collect()
-        .dump()
-        .set{genome_bins}
-    checkm(genome_bins)
+        .dump(tag: "bins_per_sample")
+        .set{genome_bins_set}
+    checkm(genome_bins_set)
 
     //bin phylogeny and annotation
-    gtdbtk(genome_bins)
+    genome_bins_set
+        .flatten()
+        .dump(tag: "bins flattened")
+        .set{genome_bins}
+    gtdbtk(genome_bins_set)
+    prokka(genome_bins)
+    // eggnog(prokka_gene_sets)
 
     // multiqc
     fastqc_raw
         .concat(fastqc_trimmed)
         .collect()
-        .dump()
+        .dump(tag: "fastqc_for_multiqc")
         .set{fastqc_for_multiqc}
     quast_dna_assemblies
         .collect()
-        .dump()
+        .dump(tag: "quast_for_multiqc")
         .set{quast_dna_assemblies_for_multiqc}
     multiqc(fastqc_for_multiqc, quast_dna_assemblies_for_multiqc)
 }
