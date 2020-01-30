@@ -23,7 +23,7 @@ process prokka {
     input:
         file(bin)
     output:
-        file("prokka/*")
+        tuple val(string), file("prokka/")
     when:
         !params.skip_annotation
     script:
@@ -40,13 +40,14 @@ process eggnog {
     publishDir "${params.output}/eggnog", mode: "copy"
 
     input:
-        file(bins)
+        tuple val(name), file(prokka_annotation)
     output:
-
+        file("eggnog")
     when:
         !params.skip_annotation
     script:
         """
-        emapper.py
+        emapper.py --guessdb -o "${name}" --output_dir eggnog -m diamond \
+            -i "${prokka_annotation}/${name}.faa" --cpu "${task.cpus}"
         """
 }

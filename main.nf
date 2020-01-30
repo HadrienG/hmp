@@ -18,6 +18,7 @@ include checkm from './modules/binning' params(output: params.output)
 
 include gtdbtk from './modules/annotation' params(output: params.output, skip_annotation: params.skip_annotation)
 include prokka from './modules/annotation' params(output: params.output, skip_annotation: params.skip_annotation)
+include eggnog from './modules/annotation' params(output: params.output, skip_annotation: params.skip_annotation)
 
 
 Channel
@@ -72,7 +73,8 @@ workflow {
         .set{genome_bins}
     gtdbtk(genome_bins_set)
     prokka(genome_bins)
-    // eggnog(prokka_gene_sets)
+    prokka.out.set{prokka_output}
+    eggnog(prokka_output)
 
     // multiqc
     fastqc_raw
