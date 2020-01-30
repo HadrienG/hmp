@@ -23,7 +23,7 @@ process prokka {
     input:
         file(bin)
     output:
-        tuple val(string), file("prokka/")
+        tuple val("${string}"), file("prokka/")
     when:
         !params.skip_annotation
     script:
