@@ -23,7 +23,7 @@ process prokka {
     input:
         file(bin)
     output:
-        file(bin)
+        file("prokka/*")
     when:
         !params.skip_annotation
     script:
