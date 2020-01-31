@@ -23,14 +23,14 @@ process prokka {
     input:
         file(bin)
     output:
-        file("${string}")
+        file("prokka_*")
     when:
         !params.skip_annotation
     script:
         def string = "${bin}".replaceAll(/.fa/, "")
         """
         prokka --cpus "${task.cpus}" --metagenome \
-            --outdir "${string}" --prefix "${string}" "${bin}"
+            --outdir "prokka_${string}" --prefix "${string}" "${bin}"
         """
 }
 
@@ -41,7 +41,7 @@ process eggnog {
     input:
         file(prokka_annotation)
     output:
-        file("output_eggnog")
+        file("output_eggnog/*emapper*")
     when:
         !params.skip_annotation
     script:
