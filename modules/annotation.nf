@@ -23,15 +23,14 @@ process prokka {
     input:
         file(bin)
     output:
-        tuple val("${string}"), file("prokka/")
+        tuple val(string), file("prokka/")
     when:
         !params.skip_annotation
     script:
+        def string = "${bin}".replaceAll(/.fa/, "")
         """
-        string="${bin}"
-        suffix=".fa"
         prokka --cpus "${task.cpus}" --metagenome \
-            --outdir prokka --prefix \${string%\$suffix} "${bin}"
+            --outdir prokka --prefix "${string}" "${bin}"
         """
 }
 
