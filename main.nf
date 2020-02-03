@@ -73,12 +73,8 @@ workflow {
         .set{genome_bins}
     gtdbtk(genome_bins_set)
     prokka(genome_bins)
-    prokka.out.set{prokka_output}
-    prokka_output
-        .view()
-        .dump(tag: "prokka annotation")
-        .set{eggnog_input}
-    eggnog(eggnog_input)
+    prokka.out.set{bin_annotations}
+    eggnog(bin_annotations)
 
     // multiqc
     fastqc_raw
