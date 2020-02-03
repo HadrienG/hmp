@@ -42,9 +42,6 @@ workflow {
     fastqc_trim(trimmed_reads)
     fastqc_trim.out.set{fastqc_trimmed}
 
-    // taxonomy classification
-    kraken(kraken_db, trimmed_reads)
-
     // DNA assembly
     if(params.skip_qc) {
         read_files_raw.set{trimmed_reads}
@@ -54,6 +51,9 @@ workflow {
     // quast
     quast(dna_assemblies)
     quast.out.set{quast_dna_assemblies}
+
+    // taxonomy classification
+    kraken(kraken_db, trimmed_reads)
 
     //binning
     dna_assemblies
