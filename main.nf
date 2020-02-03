@@ -3,12 +3,15 @@ nextflow.preview.dsl = 2
 
 params.skip_qc = false
 params.skip_annotation = true
+params.skip_taxonomy = true
 
 include fastp from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
 include fastqc as fastqc_raw from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
 include fastqc as fastqc_trim from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
 include multiqc from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
 include quast from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
+
+include kraken from './modules/taxonomy' params(output: params.output, skip_taxonomy: params.skip_taxonomy)
 
 include megahit from './modules/assembly' params(output: params.output)
 
@@ -26,19 +29,21 @@ Channel
     .dump()
     .set{read_files_raw}
 
+kraken_db = file(params.kraken_db)
 
 workflow {
     // fastqc - pass 1
     fastqc_raw(read_files_raw)
     fastqc_raw.out.set {fastqc_raw}
-
     // quality and adapter trimming
     fastp(read_files_raw)
     fastp.out.set{trimmed_reads}
-
     // fastqc - pass 2
     fastqc_trim(trimmed_reads)
     fastqc_trim.out.set{fastqc_trimmed}
+
+    // taxonomy classification
+    kraken(trimmed_reads)
 
     // DNA assembly
     if(params.skip_qc) {
@@ -46,7 +51,6 @@ workflow {
     }
     megahit(trimmed_reads)
     megahit.out.set{dna_assemblies}
-
     // quast
     quast(dna_assemblies)
     quast.out.set{quast_dna_assemblies}
