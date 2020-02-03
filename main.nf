@@ -12,6 +12,7 @@ include multiqc from './modules/qc' params(output: params.output, skip_qc: param
 include quast from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
 
 include kraken from './modules/taxonomy' params(output: params.output, skip_taxonomy: params.skip_taxonomy)
+include bracken from './modules/taxonomy' params(output: params.output, skip_taxonomy: params.skip_taxonomy)
 
 include megahit from './modules/assembly' params(output: params.output)
 
@@ -54,6 +55,8 @@ workflow {
 
     // taxonomy classification
     kraken(kraken_db, trimmed_reads)
+    kraken.out.set{taxonomy_reports}
+    bracken(kraken_db, taxonomy_reports)
 
     //binning
     dna_assemblies

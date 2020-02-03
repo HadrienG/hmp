@@ -17,7 +17,7 @@ process kraken {
 }
 
 
-process braken {
+process bracken {
     tag "taxonomy: ${name}"
     publishDir "${params.output}/kraken", mode: "copy"
     input:
