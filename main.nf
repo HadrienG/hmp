@@ -43,7 +43,7 @@ workflow {
     fastqc_trim.out.set{fastqc_trimmed}
 
     // taxonomy classification
-    kraken(trimmed_reads)
+    kraken(kraken_db, trimmed_reads)
 
     // DNA assembly
     if(params.skip_qc) {
