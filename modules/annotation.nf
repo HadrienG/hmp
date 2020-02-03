@@ -36,19 +36,19 @@ process prokka {
 
 process eggnog {
     tag "bin annotation"
-    publishDir "${params.output}/eggnog", mode: "copy"
+    publishDir "${params.output}/", mode: "copy"
 
     input:
         file(prokka_annotation)
     output:
-        file("output_eggnog/*emapper*")
+        file("eggnog/*emapper*")
     when:
         !params.skip_annotation
     script:
         def string = prokka_annotation
         """
-        mkdir output_eggnog
-        emapper.py -o "${string}" --output_dir output_eggnog -m diamond \
+        mkdir eggnog
+        emapper.py -o "${string}" --output_dir eggnog -m diamond \
             -i "${prokka_annotation}/"*.faa --cpu "${task.cpus}"
         """
 }
