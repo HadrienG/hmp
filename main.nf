@@ -4,6 +4,7 @@ nextflow.preview.dsl = 2
 params.skip_qc = false
 params.skip_annotation = true
 params.skip_taxonomy = true
+params.skip_protein_assembly = true
 
 include fastp from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
 include fastqc as fastqc_raw from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
@@ -15,6 +16,7 @@ include kraken from './modules/taxonomy' params(output: params.output, skip_taxo
 include bracken from './modules/taxonomy' params(output: params.output, skip_taxonomy: params.skip_taxonomy)
 
 include megahit from './modules/assembly' params(output: params.output)
+include plass from './modules/assembly' params(output: params.output, skip_protein_assembly: params.skip_protein_assembly)
 
 include bowtie from './modules/binning' params(output: params.output)
 include metabat from './modules/binning' params(output: params.output)
@@ -57,6 +59,9 @@ workflow {
     kraken(kraken_db, trimmed_reads)
     kraken.out.set{taxonomy_reports}
     bracken(kraken_db, taxonomy_reports)
+
+    // protein assembly
+    plass(trimmed_reads)
 
     //binning
     dna_assemblies
