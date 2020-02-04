@@ -25,7 +25,8 @@ include checkm from './modules/binning' params(output: params.output)
 
 include gtdbtk from './modules/annotation' params(output: params.output, skip_annotation: params.skip_annotation)
 include prokka from './modules/annotation' params(output: params.output, skip_annotation: params.skip_annotation)
-include eggnog from './modules/annotation' params(output: params.output, skip_annotation: params.skip_annotation)
+include eggnog_bins from './modules/annotation' params(output: params.output, skip_annotation: params.skip_annotation)
+include eggnog_proteins from './modules/annotation' params(output: params.output, skip_protein_assembly: params.skip_protein_assembly)
 
 
 Channel
@@ -65,6 +66,8 @@ workflow {
     plass(trimmed_reads)
     plass.out.set{protein_assembly}
     cdhit(protein_assembly)
+    cdhit.out.set{clusters}
+    eggnog_proteins(clusters)
 
     //binning
     dna_assemblies
@@ -89,7 +92,7 @@ workflow {
     gtdbtk(genome_bins_set)
     prokka(genome_bins)
     prokka.out.set{bin_annotations}
-    eggnog(bin_annotations)
+    eggnog_bins(bin_annotations)
 
     // multiqc
     fastqc_raw

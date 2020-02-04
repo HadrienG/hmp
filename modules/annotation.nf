@@ -34,7 +34,7 @@ process prokka {
         """
 }
 
-process eggnog {
+process eggnog_bins {
     tag "bin annotation"
     publishDir "${params.output}/", mode: "copy"
 
@@ -50,5 +50,23 @@ process eggnog {
         mkdir eggnog
         emapper.py -o "${string}" --output_dir eggnog -m diamond \
             -i "${prokka_annotation}/"*.faa --cpu "${task.cpus}"
+        """
+}
+
+process eggnog_proteins {
+    tag "protein annotation"
+    publishDir "${params.output}/plass", mode: "copy"
+
+    input:
+        tuple val(name), file(proteins_clusters)
+    output:
+        file("*emapper*")
+    when:
+        !params.skip_annotation
+    script:
+        def string = prokka_annotation
+        """
+        emapper.py -o "${name}" -m diamond \
+            -i "${name}_cluster90" --cpu "${task.cpus}"
         """
 }
