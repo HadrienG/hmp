@@ -31,3 +31,18 @@ process plass {
             > "${name}.fasta"
         """
 }
+
+process cdhit {
+    tag "clustering: ${name}"
+    publishDir "${params.output}/plass", mode: "copy"
+    input:
+        tuple val(name), file(protein_assembly)
+    output:
+        tuple val(name), file(???)
+    when:
+        !params.skip_protein_assembly
+    script:
+        """
+        cd-hit -i "${protein_assembly}" -o "${name}_cluster90" -T "${task.cpus}"
+        """
+}

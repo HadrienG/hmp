@@ -17,6 +17,7 @@ include bracken from './modules/taxonomy' params(output: params.output, skip_tax
 
 include megahit from './modules/assembly' params(output: params.output)
 include plass from './modules/assembly' params(output: params.output, skip_protein_assembly: params.skip_protein_assembly)
+include cdhit from './modules/assembly' params(output: params.output, skip_protein_assembly: params.skip_protein_assembly)
 
 include bowtie from './modules/binning' params(output: params.output)
 include metabat from './modules/binning' params(output: params.output)
@@ -62,6 +63,8 @@ workflow {
 
     // protein assembly
     plass(trimmed_reads)
+    plass.out.set{protein_assembly}
+    cdhit(protein_assembly)
 
     //binning
     dna_assemblies
