@@ -38,7 +38,7 @@ process cdhit {
     input:
         tuple val(name), file(protein_assembly)
     output:
-        tuple val(name), file(???)
+        tuple val(name), file("${name}_ cluster90*")
     when:
         !params.skip_protein_assembly
     script:
