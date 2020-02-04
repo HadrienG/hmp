@@ -62,9 +62,8 @@ process eggnog_proteins {
     output:
         file("*emapper*")
     when:
-        !params.skip_annotation
+        !params.skip_protein_assembly
     script:
-        def string = prokka_annotation
         """
         emapper.py -o "${name}" -m diamond \
             -i "${name}_cluster90" --cpu "${task.cpus}"
