@@ -17,7 +17,7 @@ dependencies:
   - megahit=1.2.9
   - metabat2=2.15
   - multiqc=1.8
-  - plass=3.764a3
+  - plass=2.c7e35
   - prokka=1.14.5
   - quast=5.0.2
   - samtools=1.9
