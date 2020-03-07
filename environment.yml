@@ -21,3 +21,4 @@ dependencies:
   - prokka=1.14.5
   - quast=5.0.2
   - samtools=1.9
+  - trinity=2.9.1
