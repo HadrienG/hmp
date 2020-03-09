@@ -30,48 +30,53 @@ include eggnog_proteins from './modules/annotation' params(output: params.output
 
 
 Channel
-    .fromFilePairs(params.reads)
+    .fromFilePairs(params.dna_reads)
     .dump()
-    .set{read_files_raw}
+    .set{read_files_dna_raw}
+
+Channel
+    .fromFilePairs(params.rna_reads)
+    .dump()
+    .set{read_files_rna_raw}
 
 kraken_db = file(params.kraken_db)
 
 workflow {
     // fastqc - pass 1
-    fastqc_raw(read_files_raw)
-    fastqc_raw.out.set {fastqc_raw}
+    fastqc_raw(read_files_dna_raw)
+    fastqc_raw.out.set{fastqc_raw}
     // quality and adapter trimming
-    fastp(read_files_raw)
-    fastp.out.set{trimmed_reads}
+    fastp(read_files_dna_raw)
+    fastp.out.set{trimmed_dna_reads}
     // fastqc - pass 2
-    fastqc_trim(trimmed_reads)
+    fastqc_trim(trimmed_dna_reads)
     fastqc_trim.out.set{fastqc_trimmed}
 
     // DNA assembly
     if(params.skip_qc) {
-        read_files_raw.set{trimmed_reads}
+        read_files_raw.set{trimmed_dna_reads}
     }
-    megahit(trimmed_reads)
+    megahit(trimmed_dna_reads)
     megahit.out.set{dna_assemblies}
     // quast
     quast(dna_assemblies)
     quast.out.set{quast_dna_assemblies}
 
     // taxonomy classification
-    kraken(kraken_db, trimmed_reads)
+    kraken(kraken_db, trimmed_dna_reads)
     kraken.out.set{taxonomy_reports}
     bracken(kraken_db, taxonomy_reports)
 
     // protein assembly
-    plass(trimmed_reads)
+    plass(trimmed_dna_reads)
     plass.out.set{protein_assembly}
-    cdhit(protein_assembly)
+    cdhit(protein_assemblies)
     cdhit.out.set{clusters}
     eggnog_proteins(clusters)
 
     //binning
     dna_assemblies
-        .join(trimmed_reads, by:0)
+        .join(trimmed_dna_reads, by:0)
         .dump(tag: "reads and assemblies")
         .set{reads_and_assemblies}
     bowtie(reads_and_assemblies)

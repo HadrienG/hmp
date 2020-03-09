@@ -46,3 +46,18 @@ process cdhit {
         cd-hit -i "${protein_assembly}" -o "${name}_cluster90" -T "${task.cpus}"
         """
 }
+
+process trinity {
+    tag "assembly: ${name}"
+    publishDir "${params.output}/trinity", mode: "copy"
+    input:
+        tuple val(name), file(reads)
+        file(manifest)
+    output:
+        tuple val(name), file("trinity/Trinity.fasta")
+    script:
+        """
+        Trinity --seqType fq --SS_lib_type RF samples_file "${manifest}"  \
+            --CPU "${task.cpus}" --output trinity
+        """
+}
