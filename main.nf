@@ -69,7 +69,7 @@ workflow {
 
     // protein assembly
     plass(trimmed_dna_reads)
-    plass.out.set{protein_assembly}
+    plass.out.set{protein_assemblies}
     cdhit(protein_assemblies)
     cdhit.out.set{clusters}
     eggnog_proteins(clusters)
