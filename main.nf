@@ -54,7 +54,7 @@ workflow {
 
     // DNA assembly
     if(params.skip_qc) {
-        read_files_raw.set{trimmed_dna_reads}
+        read_files_dna_raw.set{trimmed_dna_reads}
     }
     megahit(trimmed_dna_reads)
     megahit.out.set{dna_assemblies}
