@@ -54,10 +54,11 @@ process trinity {
         tuple val(name), file(reads)
         file(manifest)
     output:
-        tuple val(name), file("trinity/Trinity.fasta")
+        tuple file("trinity/Trinity.fasta"), file("trinity_index")
     script:
         """
         Trinity --seqType fq --SS_lib_type RF samples_file "${manifest}"  \
             --CPU "${task.cpus}" --output trinity
+        salmon index -t trinity/Trinity.fasta -i trinity_index -k 31
         """
 }
