@@ -57,8 +57,9 @@ process trinity {
         tuple file("trinity/Trinity.fasta"), file("trinity_index")
     script:
         """
+        # todo skip trimming should be a parameter
         python3 /repo/bin/create_trinity_manifest.py --manifest "${manifest}" \
-            --reads . > trinity_manifest.txt
+            --reads . --skip_trimming > trinity_manifest.txt
         Trinity --CPU "${task.cpus}" --max_memory 10G --seqType fq \
             --SS_lib_type RF --samples_file trinity_manifest.txt \
             --output trinity
