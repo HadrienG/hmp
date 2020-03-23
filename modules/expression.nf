@@ -8,7 +8,7 @@ process salmon {
         file("${name}")
     script:
         """
-        salmon quant -i index -l IU -1 "${reads[0]}" -2 "${reads[1]}" \
+        salmon quant -i "${index}" -l IU -1 "${reads[0]}" -2 "${reads[1]}" \
             --validateMappings -o "${name}" -p "${task.cpus}"
         """
 }

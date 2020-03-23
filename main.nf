@@ -32,6 +32,7 @@ include prokka from './modules/annotation' params(output: params.output, skip_an
 include eggnog_bins from './modules/annotation' params(output: params.output, skip_annotation: params.skip_annotation)
 include eggnog_proteins from './modules/annotation' params(output: params.output, skip_protein_assembly: params.skip_protein_assembly)
 
+include salmon from './modules/expression' params(output: params.output)
 
 Channel
     .fromFilePairs(params.dna_reads)
@@ -85,7 +86,7 @@ workflow {
     cdhit.out.set{clusters}
     eggnog_proteins(clusters)
 
-    // RNA assembly
+    // RNA assembly and quantification 
     trimmed_rna_reads
         .collect()
         .flatten()
@@ -93,6 +94,8 @@ workflow {
         .dump(tag: "reads for trinity")
         .set{reads_for_trinity}
     trinity(reads_for_trinity, file(params.rna_manifest))
+    trinity.out.set{transcriptome}
+    salmon(trimmed_rna_reads, transcriptome)
 
     //binning
     dna_assemblies

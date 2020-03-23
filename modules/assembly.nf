@@ -48,7 +48,7 @@ process cdhit {
 }
 
 process trinity {
-    tag "assembly: ${name}"
+    tag "assembly"
     publishDir "${params.output}/trinity", mode: "copy"
     input:
         file(reads)
