@@ -6,8 +6,8 @@ params.skip_annotation = true
 params.skip_taxonomy = true
 params.skip_protein_assembly = true
 
-include fastp_dna from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
-include fastp_rna from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
+include fastp as fastp_dna from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
+include fastp as fastp_rna from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
 include fastqc as fastqc_dna_raw from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
 include fastqc as fastqc_dna_trim from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
 include fastqc as fastqc_rna_raw from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
@@ -19,6 +19,7 @@ include kraken from './modules/taxonomy' params(output: params.output, skip_taxo
 include bracken from './modules/taxonomy' params(output: params.output, skip_taxonomy: params.skip_taxonomy)
 
 include megahit from './modules/assembly' params(output: params.output)
+include trinity from './modules/assembly' params(output: params.output)
 include plass from './modules/assembly' params(output: params.output, skip_protein_assembly: params.skip_protein_assembly)
 include cdhit from './modules/assembly' params(output: params.output, skip_protein_assembly: params.skip_protein_assembly)
 
@@ -83,6 +84,9 @@ workflow {
     cdhit(protein_assemblies)
     cdhit.out.set{clusters}
     eggnog_proteins(clusters)
+
+    // RNA assembly
+    trinity
 
     //binning
     dna_assemblies
