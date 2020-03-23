@@ -86,7 +86,13 @@ workflow {
     eggnog_proteins(clusters)
 
     // RNA assembly
-    trinity
+    trimmed_rna_reads
+        .collect()
+        .flatten()
+        .toList()
+        .dump(tag: "reads for trinity")
+        .set{reads_for_trinity}
+    trinity(reads_for_trinity, file(params.rna_manifest))
 
     //binning
     dna_assemblies
@@ -115,7 +121,8 @@ workflow {
 
     // multiqc
     fastqc_dna_raw
-        .concat(fastqc_dna_trimmed, fastqc_rna_raw, fastqc_rna_trimmed)
+        // .concat(fastqc_dna_trimmed, fastqc_rna_raw, fastqc_rna_trimmed)
+        .concat(fastqc_dna_trimmed)
         .collect()
         .dump(tag: "fastqc_for_multiqc")
         .set{fastqc_for_multiqc}

@@ -12,11 +12,11 @@ def create_manifest(manifest, samples):
         for line in f:
             sample_name = line.split()[0]
             condition = line.split()[1]
-            R1_path = samples + "/" + sample_name + "_R1.fastq.gz"
-            R2_path = samples + "/" + sample_name + "_R2.fastq.gz"
+            R1_path = samples + "/" + sample_name + "_trimmed_R1.fastq.gz"
+            R2_path = samples + "/" + sample_name + "_trimmed_R2.fastq.gz"
             print(
                 f"{condition}\t{sample_name}\t{R1_path}\t{R2_path}")
-            # read names have to be of the form $sample _R{1,2}.fastq.gz
+            # read names have to be of the form $sample_trimmed_R{1,2}.fastq.gz
 
 
 def main():
@@ -32,7 +32,7 @@ def main():
         "--reads",
         required=True,
         help="directory where all the reads are stored. read names have to be\
-        of the form sample_R{1, 2}.fastq.gz"
+        of the form sample_trimmed_R{1, 2}.fastq.gz"
     )
     args = parser.parse_args()
     create_manifest(args.manifest, args.reads)

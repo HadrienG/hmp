@@ -51,7 +51,7 @@ process trinity {
     tag "assembly: ${name}"
     publishDir "${params.output}/trinity", mode: "copy"
     input:
-        tuple val(name), file(reads)
+        file(reads)
         file(manifest)
     output:
         tuple file("trinity/Trinity.fasta"), file("trinity_index")
@@ -59,8 +59,9 @@ process trinity {
         """
         python3 /repo/bin/create_trinity_manifest.py --manifest "${manifest}" \
             --reads . > trinity_manifest.txt
-        Trinity --CPU "${task.cpus}" --seqType fq --SS_lib_type RF \
-            --samples_files trinity_manifest.txt --output trinity
+        Trinity --CPU "${task.cpus}" --max_memory 10G --seqType fq \
+            --SS_lib_type RF --samples_file trinity_manifest.txt \
+            --output trinity
         salmon index -t trinity/Trinity.fasta -i trinity_index -k 31
         """
 }

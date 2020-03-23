@@ -11,7 +11,7 @@ RUN mkdir -p /checkm_data && \
     tar xzf checkm_data_2015_01_16.tar.gz && \
     rm checkm_data_2015_01_16.tar.gz && \
     /opt/conda/envs/hmp/bin/checkm data setRoot /checkm_data
-RUN git clone https://github.com/HadrienG/2019_classifiers_benchmark repo
+RUN git clone https://github.com/HadrienG/hmp repo
 ENV PATH /opt/conda/envs/hmp/bin:$PATH
 
 WORKDIR /mnt/proj
