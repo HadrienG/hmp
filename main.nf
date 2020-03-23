@@ -6,9 +6,12 @@ params.skip_annotation = true
 params.skip_taxonomy = true
 params.skip_protein_assembly = true
 
-include fastp from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
-include fastqc as fastqc_raw from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
-include fastqc as fastqc_trim from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
+include fastp_dna from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
+include fastp_rna from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
+include fastqc as fastqc_dna_raw from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
+include fastqc as fastqc_dna_trim from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
+include fastqc as fastqc_rna_raw from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
+include fastqc as fastqc_rna_trim from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
 include multiqc from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
 include quast from './modules/qc' params(output: params.output, skip_qc: params.skip_qc)
 
@@ -43,18 +46,25 @@ kraken_db = file(params.kraken_db)
 
 workflow {
     // fastqc - pass 1
-    fastqc_raw(read_files_dna_raw)
-    fastqc_raw.out.set{fastqc_raw}
+    fastqc_dna_raw(read_files_dna_raw)
+    fastqc_dna_raw.out.set{fastqc_dna_raw}
+    fastqc_rna_raw(read_files_rna_raw)
+    fastqc_rna_raw.out.set{fastqc_rna_raw}
     // quality and adapter trimming
-    fastp(read_files_dna_raw)
-    fastp.out.set{trimmed_dna_reads}
+    fastp_dna(read_files_dna_raw)
+    fastp_dna.out.set{trimmed_dna_reads}
+    fastp_rna(read_files_rna_raw)
+    fastp_rna.out.set{trimmed_rna_reads}
     // fastqc - pass 2
-    fastqc_trim(trimmed_dna_reads)
-    fastqc_trim.out.set{fastqc_trimmed}
+    fastqc_dna_trim(trimmed_dna_reads)
+    fastqc_dna_trim.out.set{fastqc_dna_trimmed}
+    fastqc_rna_trim(trimmed_rna_reads)
+    fastqc_rna_trim.out.set{fastqc_rna_trimmed}
 
     // DNA assembly
     if(params.skip_qc) {
         read_files_dna_raw.set{trimmed_dna_reads}
+        read_files_rna_raw.set{trimmed_rna_reads}
     }
     megahit(trimmed_dna_reads)
     megahit.out.set{dna_assemblies}
@@ -100,8 +110,8 @@ workflow {
     eggnog_bins(bin_annotations)
 
     // multiqc
-    fastqc_raw
-        .concat(fastqc_trimmed)
+    fastqc_dna_raw
+        .concat(fastqc_dna_trimmed, fastqc_rna_raw, fastqc_rna_trimmed)
         .collect()
         .dump(tag: "fastqc_for_multiqc")
         .set{fastqc_for_multiqc}
