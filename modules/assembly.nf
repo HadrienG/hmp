@@ -36,25 +36,38 @@ process cdhit {
     tag "clustering: ${name}"
     publishDir "${params.output}/plass", mode: "copy"
     input:
-        tuple val(name), file(protein_assembly)
+        tuple val(name), file(assembly)
     output:
         tuple val(name), file("${name}_cluster90*")
     when:
         !params.skip_protein_assembly
     script:
         """
-        cd-hit -i "${protein_assembly}" -o "${name}_cluster90" -T "${task.cpus}"
+        cd-hit -i "${assembly}" -o "${name}_cluster90" -T "${task.cpus}"
+        """
+}
+
+process cdhit_transcriptome {
+    tag "clustering transcriptome"
+    publishDir "${params.output}/trinity", mode: "copy"
+    input:
+        file(assembly)
+    output:
+        file("trinity_cluster90*")
+    script:
+        """
+        cd-hit -i "${assembly}" -o "trinity_cluster90" -T "${task.cpus}"
         """
 }
 
 process trinity {
     tag "assembly"
-    publishDir "${params.output}/trinity", mode: "copy"
+    publishDir "${params.output}", mode: "copy"
     input:
         file(reads)
         file(manifest)
     output:
-        tuple file("trinity/Trinity.fasta"), file("trinity_index")
+        file("trinity/Trinity.fasta")
     script:
         """
         # todo skip trimming should be a parameter
@@ -63,6 +76,5 @@ process trinity {
         Trinity --CPU "${task.cpus}" --max_memory 10G --seqType fq \
             --SS_lib_type RF --samples_file trinity_manifest.txt \
             --output trinity
-        salmon index -t trinity/Trinity.fasta -i trinity_index -k 31
         """
 }

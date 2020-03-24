@@ -22,6 +22,7 @@ include megahit from './modules/assembly' params(output: params.output)
 include trinity from './modules/assembly' params(output: params.output)
 include plass from './modules/assembly' params(output: params.output, skip_protein_assembly: params.skip_protein_assembly)
 include cdhit from './modules/assembly' params(output: params.output, skip_protein_assembly: params.skip_protein_assembly)
+include cdhit_transcriptome from './modules/assembly' params(output: params.output, skip_protein_assembly: params.skip_protein_assembly)
 
 include bowtie from './modules/binning' params(output: params.output)
 include metabat from './modules/binning' params(output: params.output)
@@ -33,6 +34,7 @@ include eggnog_bins from './modules/annotation' params(output: params.output, sk
 include eggnog_proteins from './modules/annotation' params(output: params.output, skip_protein_assembly: params.skip_protein_assembly)
 
 include salmon from './modules/expression' params(output: params.output)
+include index as salmon_index from './modules/expression' params(output: params.output)
 
 Channel
     .fromFilePairs(params.dna_reads)
@@ -95,7 +97,11 @@ workflow {
         .set{reads_for_trinity}
     trinity(reads_for_trinity, file(params.rna_manifest))
     trinity.out.set{transcriptome}
-    salmon(trimmed_rna_reads, transcriptome)
+    cdhit_transcriptome(transcriptome)
+    cdhit_transcriptome.out.set{transcriptome_90}
+    salmon_index(transcriptome_90)
+    salmon_index.out.set{index}
+    salmon(trimmed_rna_reads, index)
 
     //binning
     dna_assemblies
