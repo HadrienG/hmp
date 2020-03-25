@@ -4,6 +4,7 @@ process gtdbtk {
     publishDir "${params.output}/gtdb", mode: "copy"
 
     input:
+        file(gtdbtk_db)
         file(bins)
     output:
         file(gtdb)
@@ -11,6 +12,7 @@ process gtdbtk {
         !params.skip_annotation
     script:
         """
+        export GTDBTK_DATA_PATH="./release89"
         gtdbtk classify_wf -x fa --genome_dir . \
             --out_dir gtdb --cpus "${task.cpus}"
         """
@@ -39,6 +41,7 @@ process eggnog_bins {
     publishDir "${params.output}/", mode: "copy"
 
     input:
+        file(eggnog_db)
         file(prokka_annotation)
     output:
         file("eggnog/*emapper*")
@@ -49,7 +52,8 @@ process eggnog_bins {
         """
         mkdir eggnog
         emapper.py -o "${string}" --output_dir eggnog -m diamond \
-            -i "${prokka_annotation}/"*.faa --cpu "${task.cpus}"
+            -i "${prokka_annotation}/"*.faa --cpu "${task.cpus}" \
+            --data_dir "${eggnog_db}"
         """
 }
 
@@ -58,6 +62,7 @@ process eggnog_proteins {
     publishDir "${params.output}/plass", mode: "copy"
 
     input:
+        file(eggnog_db)
         tuple val(name), file(proteins_clusters)
     output:
         file("*emapper*")
@@ -66,6 +71,7 @@ process eggnog_proteins {
     script:
         """
         emapper.py -o "${name}" -m diamond \
-            -i "${name}_cluster90" --cpu "${task.cpus}"
+            -i "${name}_cluster90" --cpu "${task.cpus}" \
+            --data_dir "${eggnog_db}"
         """
 }

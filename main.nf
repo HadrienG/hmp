@@ -86,7 +86,11 @@ workflow {
     plass.out.set{protein_assemblies}
     cdhit(protein_assemblies)
     cdhit.out.set{clusters}
-    eggnog_proteins(clusters)
+    if (params.eggnog_db) {
+        eggnog_db = file(params.eggnog_db)
+        eggnog_proteins(eggnog_db, clusters)
+    }
+
 
     // RNA assembly and quantification 
     trimmed_rna_reads
@@ -123,10 +127,16 @@ workflow {
         .flatten()
         .dump(tag: "bins flattened")
         .set{genome_bins}
-    gtdbtk(genome_bins_set)
+    if (params.gtdbtk_db) {
+        gtdbtk_db = file(params.gtdbtk_db)
+        gtdbtk(gtdbtk_db, genome_bins_set)
+    }
     prokka(genome_bins)
     prokka.out.set{bin_annotations}
-    eggnog_bins(bin_annotations)
+    if (params.eggnog_db) {
+        eggnog_db = file(params.eggnog_db)
+        eggnog_bins(eggnog_db, bin_annotations)
+    }
 
     // multiqc
     fastqc_dna_raw
